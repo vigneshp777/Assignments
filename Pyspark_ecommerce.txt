@@ -1,4 +1,3 @@
-# Databricks notebook source
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, sum as _sum
 
@@ -9,14 +8,14 @@ spark = SparkSession.builder \
 
 df = spark.read.csv("/FileStore/tables/sample_ecommerce_data.csv", header=True, inferSchema=True)
 
-#remove null
+
 df_cleaned = df.dropna()
 
-# Calculate total sales per category
+#Grouping based on category
 df_cleaned = df_cleaned.withColumn("Total_Sales", col("Product Price") * col("Quantity Sold"))
 total_sales_per_category = df_cleaned.groupBy("Product Category").agg(_sum("Total_Sales").alias("Total Sales"))
 
-# total sales per customer
+#Grouping based on customer
 customer_segmentation = df_cleaned.groupBy("Customer ID").agg(_sum("Quantity Sold").alias("Total Sales"))
 
 # file storing
